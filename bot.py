@@ -1,7 +1,10 @@
+import string
+
 from aiogram import Bot, types
 from aiogram.dispatcher import Dispatcher
 from aiogram.utils import executor
-import os
+import os, json, string
+
 
 bot = Bot(token=os.getenv('TOKEN'))
 dp = Dispatcher(bot)
@@ -32,10 +35,16 @@ async def command_start(message: types.Message):
 
 @dp.message_handler()
 async def echo_send(message: types.Message):
-    if message.text == 'Привет' or 'привет' or 'Дарова' or 'Хай':
-        await message.answer('Привет Катечка сладкая булочка')
-    elif message.text == 'Эй':
-        await message.answer('Иди к черту кожаный мешок ')
+    if {i.lower().translate(str.maketrans('', '', string.punctuation)) for i in message.text.split(' ')}\
+        .intersection(set(json.load(open('cenz.json')))) != set():
+        await message.reply("Маты запрещены")
+        await message.delete()
 
+    # if message.text == 'Привет':
+    #     await message.answer('Привет Катечка сладкая булочка')
+    # elif message.text == 'Эй':
+    #     await message.answer('Иди к черту кожаный мешок ')
+# await message.replay(message.text)
+#await message.send_message.from_user.id, message.text)
 
 executor.start_polling(dp, skip_updates=True, on_startup=on_startup)
